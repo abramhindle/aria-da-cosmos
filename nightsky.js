@@ -270,6 +270,18 @@ request.open('GET', '750.json', false);
 request.send();
 var stars = JSON.parse(request.responseText).stars;
 
+// Get Star Database configuration file
+var request = new XMLHttpRequest();
+request.open('GET', 'HYG/hygdata_v3.csv', false);
+request.send();
+var starrows = d3.csv.parse(request.responseText);
+var starhash = {};
+starrows.forEach(function(star) {
+    if (star["hr"]) {
+        starhash["HR "+star["hr"]] = star;
+    }
+});
+
 // Process URL parameters
 window.location.hash.split('&').forEach(function(frag) {
     var option = frag.split('=')[0];
@@ -345,6 +357,7 @@ function render() {
     d3.select("#starName").text('');
     d3.select("#magnitude").text('');
     d3.select("#distance").text('');
+    d3.select("#spectrum").text('');
     
     var positions = [];
     screenStars.forEach(function(star) {
@@ -393,9 +406,13 @@ function render() {
         } else {
             name = points.select('circle#point-'+i).datum().name;
         }
+        var point = points.select('circle#point-'+i).datum();
         d3.select('#starName').text(name);
-        d3.select('#magnitude').text("Magnitiude: " + points.select('circle#point-'+i).datum().vmag);
-        d3.select('#distance').text('Distance: ' + points.select('circle#point-'+i).datum().dist + ' ly');
+        d3.select('#magnitude').text("Magnitiude: " + point.vmag);
+        d3.select('#distance').text('Distance: ' + point.dist + ' ly');
+        // add lookup here
+        d3.select('#spectrum').text('Type: '+starhash[point.name].spect);
+
       })
     
     points.selectAll("circle")
