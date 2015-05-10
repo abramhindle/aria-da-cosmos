@@ -4,6 +4,8 @@
 
 Using the Night Sky viewer we enable a unique audio experience.
 
+It is meant to be run offline so all assets are included.
+
 ## License & Credits
 
 Night Sky is distributed under the MIT License by Matthew Petroff. For more information, read the file `COPYING` or peruse the license [online](http://www.opensource.org/licenses/MIT).

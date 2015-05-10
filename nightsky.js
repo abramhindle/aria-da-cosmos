@@ -292,7 +292,31 @@ var stars = Object.keys(starhash).map(function(starname) {
 });
 // send our star selection somewhere
 function report(star) {
-    
+    var msg = {"queue":[[ "127.0.0.1", "/star", 
+                          "s",star.hr, 
+                          "f",star.ra,
+                          "f",star.dec, 
+                          "f",star.dist, 
+                          "f",star.mag, 
+                          "s",star.spect,
+                          "f",star.lum ]]};
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState==4) {
+            try {
+                if (xhr.status==200) {
+                    var text = xhr.responseText;
+                }
+            } 
+            catch(e) {
+                alert('Error: ' + e.name);
+            }
+        }
+    };
+    xhr.open("POST","http://"+window.location.host+"/osc");
+    xhr.overrideMimeType("application/json");
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.send( JSON.stringify( msg ) );
 }
 
 
