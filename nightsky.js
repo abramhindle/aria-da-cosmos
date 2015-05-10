@@ -62,7 +62,7 @@ if(!(document.fullscreen || document.mozFullScreen || document.webkitIsFullScree
 }
 
 var azimuth = Math.PI, altitude = 0.3, hfov = 0.9;
-var lat = 41, lng = -73;
+var lat = 53.3333, lng = 113.50;
 
 function getLocation() {
     navigator.geolocation.getCurrentPosition(setPosition);
@@ -265,10 +265,12 @@ function animate() {
 
 
 // Get JSON configuration file
+/*
 var request = new XMLHttpRequest();
 request.open('GET', '750.json', false);
 request.send();
 var stars = JSON.parse(request.responseText).stars;
+*/
 
 // Get Star Database configuration file
 var request = new XMLHttpRequest();
@@ -277,10 +279,23 @@ request.send();
 var starrows = d3.csv.parse(request.responseText);
 var starhash = {};
 starrows.forEach(function(star) {
-    if (star["hr"]) {
+    if (star["hr"] && star["mag"] < 5.2) {
         starhash["HR "+star["hr"]] = star;
     }
 });
+var stars = Object.keys(starhash).map(function(starname) {
+    var star = starhash[starname];
+    star.pname = star.proper;
+    star.vmag = star.mag;
+    star.name = starname;
+    return star;
+});
+// send our star selection somewhere
+function report(star) {
+    
+}
+
+
 
 // Process URL parameters
 window.location.hash.split('&').forEach(function(frag) {
@@ -347,6 +362,7 @@ function render() {
             s.name = star.name;
             s.pname = star.pname;
             s.dist = star.dist;
+            s.spect = star.spect;
             if (s.x > 0 && s.x < canvas.width && s.y > 0 && s.y < canvas.height) {
                 screenStars.push(s);
             }
@@ -411,8 +427,9 @@ function render() {
         d3.select('#magnitude').text("Magnitiude: " + point.vmag);
         d3.select('#distance').text('Distance: ' + point.dist + ' ly');
         // add lookup here
-        d3.select('#spectrum').text('Type: '+starhash[point.name].spect);
-
+        d3.select('#spectrum').text('Type: '+ starhash[point.name].spect);
+        // send message
+        report(starhash[point.name]);
       })
     
     points.selectAll("circle")
@@ -421,7 +438,7 @@ function render() {
         .attr("id", function(d, i) { 
           return "point-"+i; })
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-        .attr("r", function (d) { return Math.pow(1.5, -d.vmag) * 2.5; })
+        .attr("r", function (d) { return Math.pow(1.5, -d.vmag) * 4.5; })
         .attr('stroke', '#fff')
         .attr("stroke-width", 0)
         .style('fill', '#fff');
