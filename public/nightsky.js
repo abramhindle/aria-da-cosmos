@@ -25,6 +25,39 @@ document.getElementById('getLocation').addEventListener('mousedown', getLocation
 document.getElementById('enterLocation').addEventListener('mousedown', enterLocation, false);
 document.getElementById('manualLocation').addEventListener('mousedown', manualLocation, false);
 
+// http://www.vendian.org/mncharity/dir3/starcolor/details.html
+// http://www.vendian.org/mncharity/dir3/starcolor/
+var colours = {
+  "O5":"#9db4ff",
+  "B1":"#a2b9ff",
+  "B3":"#a7bcff",
+  "B5":"#aabfff",
+  "B8":"#afc3ff",
+  "A1":"#baccff",
+  "A3":"#c0d1ff",
+  "A5":"#cad8ff",
+  "F0":"#e4e8ff",
+  "F2":"#edeeff",
+  "F5":"#fbf8ff",
+  "F8":"#fff9f9",
+  "G2":"#fff5ec",
+  "G5":"#fff4e8",
+  "G8":"#fff1df",
+  "K0":"#ffebd1",
+  "K4":"#ffd7ae",
+  "K7":"#ffc690",
+  "M2":"#ffbe7f",
+  "M4":"#ffbb7b",
+  "M6":"#ffbb7b",
+  "O":"#9bb0ff",  
+  "B":"#aabfff",  
+  "A":"#cad7ff",  
+  "F":"#f8f7ff",  
+  "G":"#fff4ea",  
+  "K":"#ffd2a1",  
+  "M":"#ffcc6f"  
+};
+
 function getLink() {
     alert(window.location.href.split('#')[0] + '#lat=' + lat + '&lng=' + lng + '&alt=' + altitude
     + '&azm=' + azimuth + '&fov=' + hfov + '&tim=' + date.getTime());
@@ -415,6 +448,13 @@ function render() {
     points = svgContainer.append("svg:g").attr("id", "points");
     paths = svgContainer.append("svg:g").attr("id", "point-paths");
     selects = svgContainer.append("svg:g").attr("id", "selects");
+
+    var starColour = function(d,i) {
+            var point = points.select('circle#point-'+i).datum();
+            var spect = starhash[point.name].spect;
+            var colour = colours[spect[0]+spect[1]] || colours[spect[0]] || "#FFFFFF";
+            return colour;
+    };
     
     clips.selectAll("clipPath")
         .data(positions)
@@ -463,9 +503,9 @@ function render() {
           return "point-"+i; })
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
         .attr("r", function (d) { return Math.pow(1.5, -d.vmag) * 4.5; })
-        .attr('stroke', '#fff')
+        .attr('stroke', starColour)
         .attr("stroke-width", 0)
-        .style('fill', '#fff');
+        .style('fill', starColour);
     
     selects.selectAll("path")
         .data(screenStars)
@@ -475,8 +515,7 @@ function render() {
           return "select-"+i; })
         .attr("transform", function(d) { return "translate(" + (d.x - 10) + "," + (d.y - 10) + ")"; })
         .attr('display', 'none')
-        .style('fill', '#fff');
-    
+        .style('fill', starColour);    
     
     
     // Draw horizon
