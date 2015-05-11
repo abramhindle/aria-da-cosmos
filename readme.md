@@ -13,3 +13,5 @@ Night Sky is distributed under the MIT License by Matthew Petroff. For more info
 Moon calculations are done using [SunCalc](https://github.com/mourner/suncalc) by Vladimir Agafonkin, which is [BSD-licensed](https://github.com/mourner/suncalc/blob/master/LICENSE), and star calculations are based on this library.
 
 Star data is based on the [HYG star database archive](https://github.com/astronexus/HYG-Database).
+
+Aria da Capo by Bach from Open Goldberg Variations https://musescore.com/opengoldberg/goldberg-variations
