@@ -1,0 +1,28 @@
+https://musescore.com/opengoldberg/goldberg-variations
+
+About this sheet music
+
+This new edition of Bach's Goldberg Variations is created by MuseScore lead developer Werner Schweer. The funds to create this work raised via the crowd funding site Kickstarter (http://kck.st/opengoldberg). The edition has been refined through an open process of peer review and careful scrutiny from pianist Kimiko Ishizaka. You can listen and download her recording on http://opengoldbergvariations.org
+
+Have an iPad? Install the free Open Goldberg app http://itunes.apple.com/us/app/open-goldberg-variations/id529060306
+
+Order the printed edition of Goldberg Variations via GRIN Publishing: http://bit.ly/ST3XGf
+Here is our own unboxing video: http://www.youtube.com/watch?v=QrWIwdNI3Zc
+
+To open the MuseScore source file, you need to use the MuseScore nightly build which you can download from http://musescore.org/en/download#nightly
+
+Revision History
+* June 16th: Revised edition (20+ fixes - http://bit.ly/Kki4KL )
+* May 28th: Release of the score
+
+A special thanks to:
+* All the people who funded this project
+* All the people who helped with the public peer review of the score
+
+The OpenGoldberg team
+Werner Schweer, Nicolas Froment, Thomas Bonte
+Robert Douglass, Kimiko Ishizaka, Anne-Marie Sylvestre
+
+Follow OpenGoldberg on
+Facebook: https://www.facebook.com/Open.Goldberg.Variations
+Twitter: https://twitter.com/opengoldberg
