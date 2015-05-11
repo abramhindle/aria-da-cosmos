@@ -116,6 +116,8 @@ s.scope;
 
 
 
+
+
 ~playestar = {|elm,amp=0.0,freq=440.0,attack=20.0,decay=20.0,n=100| ~mkelement.(~lookupestar.(elm),n:n).play(s,args:[\amp,amp,\freq,freq,\attack,attack,\decay,decay]) };
 ~playastar = {|elm,amp=0.0,freq=440.0,attack=20.0,decay=20.0,n=100| ~mkelement.(~lookupastar.(elm),n:n).play(s,args:[\amp,amp,\freq,freq,\attack,attack,\decay,decay]) };
 
@@ -141,7 +143,14 @@ s.scope;
 	spect.postln;
 	spect.class.postln;
 	dacapo = ~dacapo[~dacapoi];
-	~playestar.(spect,freq: dacapo[3].midi2cps,amp: 0.1,attack:dacapo[1]*0.2,decay:dacapo[1]*0.8);
+	if(dacapo[2]==2,{
+		~playestar.(spect,freq: dacapo[3].midicps/5.0,amp:
+			0.1,attack:2*dacapo[1]*0.2,decay:2*dacapo[1]*0.8);
+	}, {
+		~playastar.(spect,freq: dacapo[3].midicps/5.0,amp:
+			0.1,attack:2*dacapo[1]*0.2,decay:2*dacapo[1]*0.8);
+	});
+	(freq: dacapo[3].midicps,  dur: dacapo[1]).play;
 	~dacapoi = ~dacapoi + 1;
 };
 
