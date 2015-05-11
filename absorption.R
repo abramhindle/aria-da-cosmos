@@ -1,5 +1,4 @@
-library(zoo)
-
+# calculates absorption lines from spectra
 
 
 datfiles <- list.files(path = "./stars/",pattern="*.dat")
@@ -30,6 +29,15 @@ process <- function(file) {
     data.frame(out)
 }
 
+emission <- function(file) {
+    v <- read.table(paste("stars/",file,sep=""))
+    filt <- filter(v)
+    out <- c()
+    out$angstrom <- filt$V1
+    out$value <- filt$V2
+    data.frame(out)
+}
+
 file <- datfiles[1]
 vvv <- process(datfiles[1])
 summary(vvv[vvv$line,])
@@ -41,6 +49,25 @@ sapply(datfiles,function(file) {
     func <- function() {
         vvv <- process(file)
         write.csv(vvv[vvv$line,], paste("absorption",file,sep="/"))
+    }
+    func()
+    #try(func(),FALSE)
+})
+
+sapply(datfiles,function(file) {
+    print(file)
+    func <- function() {
+        vvv <- process(file)
+        write.csv(vvv[vvv$line,], paste("absorption",file,sep="/"))
+    }
+    func()
+    #try(func(),FALSE)
+})
+sapply(datfiles,function(file) {
+    print(file)
+    func <- function() {
+        vvv <- emission(file)
+        write.csv(vvv, paste("emission/",file,sep=""))
     }
     func()
     #try(func(),FALSE)
