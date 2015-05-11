@@ -1,5 +1,5 @@
 # calculates absorption lines from spectra
-
+library(zoo)
 
 datfiles <- list.files(path = "./stars/",pattern="*.dat")
 datfiles = datfiles[datfiles!="irstphot.dat"]
