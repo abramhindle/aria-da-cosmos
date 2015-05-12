@@ -11,7 +11,7 @@ The OBAFGKM table...
   K     255 210 161  #ffd2a1  
   M     255 204 111  #ffcc6f  
 
- O5(V)  	  157 180 255   #9db4ff
+  O5(V)  	  157 180 255   #9db4ff
   B1(V)  	  162 185 255   #a2b9ff
   B3(V)  	  167 188 255   #a7bcff
   B5(V)  	  170 191 255   #aabfff
