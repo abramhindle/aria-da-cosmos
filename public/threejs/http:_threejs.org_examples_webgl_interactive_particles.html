@@ -130,7 +130,7 @@
 				} );
 
 				var geometry = new THREE.BoxGeometry( 200, 200, 200, 16, 16, 16 );
-
+                                geometry.dynamic = true;
 				particles = new THREE.PointCloud( geometry, shaderMaterial );
 
 				var values_size = attributes.size.value;
