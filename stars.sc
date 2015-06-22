@@ -18,7 +18,6 @@ SynthDef(\hydro3, {
 			}).sum / (2 * nsize)
 	)
 }).add;
-~hydro3 = Synth(\hydro3)
 
 
 
@@ -176,3 +175,18 @@ SynthDef(\hydro3, {
 	~playStar.(msg[1..7]);
 };
 OSCFunc.newMatching(~starlistener, '/star');
+~hydro3 = Synth(\hydro3);
+~hydro3.set(\amp,0.3)
+~end = {
+	var amp = 0.3;
+	~dacapoi = 10000000000000;
+	Routine({
+		100.do {|x|
+			amp = amp / 1.1;
+			~hydro3.set(\amp,amp);
+			0.1.wait;
+		}
+	}).play();
+};
+OSCFunc.newMatching(~endlistener, '/end');
+//~end.();

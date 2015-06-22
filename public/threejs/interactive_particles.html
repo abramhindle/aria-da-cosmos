@@ -331,6 +331,27 @@ animate();
 var upFunc;
 var downFunc;
 
+var sendEnd = function() {
+    var msg = {"queue":[[ "127.0.0.1", "/end"]]};
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState==4) {
+            try {
+                if (xhr.status==200) {
+                    var text = xhr.responseText;
+                }
+            } 
+            catch(e) {
+                alert('Error: ' + e.name);
+            }
+        }
+    };
+    xhr.open("POST","http://"+window.location.host+"/osc");
+    xhr.overrideMimeType("application/json");
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.send( JSON.stringify( msg ) );
+};
+
 function init() {
     
     container = document.getElementById( 'container' );
@@ -433,6 +454,9 @@ function init() {
         } else
         if (event.keyCode == 38) /* Up */ {
             rotateUpF();
+        } else
+        if (event.keyCode == 46 || event.keyCode == 19) /* break or delete */ {
+            sendEnd();
         } else {
             return false;
         }
