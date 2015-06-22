@@ -327,7 +327,23 @@ function init() {
         camera.position.z= -1 * Math.pow(2,up);
         raycaster.params.PointCloud.threshold = 0.1*up;
     };
-    //window.addEventListener( 'keydown', keydown, false );
+    var zoomInF = function() {
+        controls.zoomIn(0.01);
+    };
+    var zoomOutF = function() {
+        controls.zoomOut(0.01);
+    }
+    var keydown = function(event) {
+        //alert(event.keyCode);
+        if (event.keyCode == 88) /* x */ {
+            zoomInF();
+        }
+        if (event.keyCode == 90) /* x */ {
+            zoomOutF();
+        }
+    };
+
+    window.addEventListener( 'keydown', keydown, false );
     //window.addEventListener( 'keyup', keyup, false );
 
 

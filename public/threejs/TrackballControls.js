@@ -235,6 +235,20 @@ THREE.TrackballControls = function ( object, domElement ) {
 		}
 
 	};
+	this.zoomIn = (function(factor) {
+            _zoomStart.x = 0.5+factor;
+            _zoomStart.y = 0.5+factor;
+            _zoomEnd.x = 0.5;
+            _zoomEnd.y = 0.5;
+            this.update();
+        });
+	this.zoomOut = (function(factor) {
+            _zoomStart.x = 0.5;
+            _zoomStart.y = 0.5;
+            _zoomEnd.x = 0.5+factor;
+            _zoomEnd.y = 0.5+factor;
+            this.update();
+        });
 
 	this.panCamera = (function() {
 
