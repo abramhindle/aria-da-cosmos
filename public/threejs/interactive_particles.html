@@ -190,13 +190,13 @@ var scalef = function(x, arr) {
     }
 };
 var pcthreshold = [
-     [1.0  ,  0.5   ]//
-    ,[2.0  ,  0.5   ]//
-    ,[5.0  ,  0.5   ]// ( a little much) 
+     [1.0  ,  0.3   ]//
+    ,[2.0  ,  0.4   ]//
+    ,[5.0  ,  0.45   ]// ( a little much) 
     ,[10   ,  0.5   ]// ( too much) 
-    ,[20   ,  0.9   ]//
-    ,[45   ,  1.05  ]//
-    ,[216  ,  1.27  ]//
+    ,[20   ,  0.6   ]//
+    ,[45   ,  0.8  ]//
+    ,[216  ,  1.0  ]//
     ,[728  ,  1.45  ]//(good) 
     ,[1200  ,  2.0  ]//(good) 
     ,[2500 ,  3.0   ]// (could be better) 
@@ -206,6 +206,21 @@ var pcthreshold = [
     ,[88000,  300.0   ]//
 ];
 
+var blowupscale = [
+     [ 1 , 3 ], // too small
+     [ 4 , 3 ], // too small
+     [ 12, 3.5 ], // too big?
+     [ 27, 3.7 ], // too big!
+     [ 54, 4 ], // too big!
+     [ 100, 6 ], // too big!
+     [ 237, 36 ], // ok
+     [ 628, 84 ], // ok
+     [ 1356, 165], // ok
+     [ 5000, 600], // ok
+     [ 22000, 3040], // too small
+     [ 67111, 6540], // too small but often too big
+     [ 261401, 26400] // too small
+];
 
 function debug(str) {
     document.getElementById("debug").innerHTML = str;
@@ -579,8 +594,8 @@ function blowup(star,index,position) {
     var osize = getSizeOfStar(index);
     var dist = scalePosition(camera.position);
     //var threshold = 0.4+0.1*(1+Math.log(dist)/Math.log(2));
-    //var threshold = scalef(dist, blowupscale);
-    var bscale = (1+dist)/(1+Math.log(dist))
+    var bscale = scalef(dist, blowupscale);
+    //var bscale = (1+dist)/(1+Math.log(dist))
     debug(dist + " " + bscale);
     // [ 1 , 2 ], // too small
     // [ 4 , 2.01 ], // too small
