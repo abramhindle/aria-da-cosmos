@@ -11,7 +11,7 @@ It is meant to be run offline so all assets are included.
   - [X] Mouse navigation
   - [X] Keyboard zoom in out
   - [X] Keyboard 
-  - [ ] Fix Raytracing with size 
+  - [X] Fix Raytracing with size 
   - [ ] add maximum note length
   - [ ] Test on laptop with projector
 ## License & Credits

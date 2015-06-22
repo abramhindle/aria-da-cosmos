@@ -5,6 +5,21 @@ s.freqscope;
 s.plotTree;
 s.scope;
 
+SynthDef(\hydro3, {
+	|out=0,amp=1.0,freq=440|
+	var nsize,n = (2..10);
+	nsize = n.size;
+	Out.ar(0,
+		amp * 
+		(
+			n.collect {arg i; 
+				SinOsc.ar( (1.0 - (1/(i*i))) * freq ) +
+				SinOsc.ar( ((1/4) - (1/((i+1)*(i+1)))) * freq)
+			}).sum / (2 * nsize)
+	)
+}).add;
+~hydro3 = Synth(\hydro3)
+
 
 
 // angstroms 10X than nanometers
@@ -132,7 +147,7 @@ s.scope;
 
 ~playStar = {
 	|msg|
-	var hr,ra,dec,dist,mag,spect,lum,freq,dacapo;
+	var hr,ra,dec,dist,mag,spect,lum,freq,dacapo,mdur;
 	hr = msg[0];
 	ra = msg[1];
 	dec = msg[2];
@@ -143,20 +158,21 @@ s.scope;
 	spect.postln;
 	spect.class.postln;
 	dacapo = ~dacapo[~dacapoi];
+	mdur = 2*dacapo[1]*0.8;
 	if(dacapo[2]==2,{
 		~playestar.(spect,freq: dacapo[3].midicps/5.0,amp:
-			0.1,attack:2*dacapo[1]*0.2,decay:2*dacapo[1]*0.8);
+			0.1,attack:2*dacapo[1]*0.2,decay:min(mdur,20));
 	}, {
 		~playastar.(spect,freq: dacapo[3].midicps/5.0,amp:
-			0.1,attack:2*dacapo[1]*0.2,decay:2*dacapo[1]*0.8);
+			0.1,attack:2*dacapo[1]*0.2,decay:min(mdur,20));
 	});
-	(freq: dacapo[3].midicps,  dur: dacapo[1]).play;
+	(freq: dacapo[3].midicps, amp:0.1,  dur: min(dacapo[1],20)).play;
 	~dacapoi = ~dacapoi + 1;
 };
 
 ~starlistener = {
 	|msg|
-	~playStar.(msg[1..7]);
 	msg.postln;
+	~playStar.(msg[1..7]);
 };
 OSCFunc.newMatching(~starlistener, '/star');
