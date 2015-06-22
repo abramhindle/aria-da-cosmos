@@ -9,7 +9,7 @@ It is meant to be run offline so all assets are included.
 ## TODO
   - [X] Information Panel
   - [X] Mouse navigation
-  - [ ] Keyboard zoom in out
+  - [X] Keyboard zoom in out
   - [ ] Keyboard 
   - [ ] Fix Raytracing with size 
   - [ ] add maximum note length

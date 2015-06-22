@@ -249,6 +249,50 @@ THREE.TrackballControls = function ( object, domElement ) {
             _zoomEnd.y = 0.5+factor;
             this.update();
         });
+	this.panLeft = (function(factor) {
+            _panStart.x = 0.5;
+            _panStart.y = 0.5;
+            _panEnd.x = 0.5+factor;
+            _panEnd.y = 0.5;
+            this.update();
+        });
+	this.panRight = (function(factor) {
+            _panStart.x = 0.5;
+            _panStart.y = 0.5;
+            _panEnd.x = 0.5-factor;
+            _panEnd.y = 0.5;
+            this.update();
+        });
+	this.rotateLeft = (function(factor) {
+            _movePrev.x = 0.5;
+            _movePrev.y = 0.5;
+            _moveCurr.x = 0.5+factor;
+            _moveCurr.y = 0.5;
+            this.update();
+        });
+	this.rotateRight = (function(factor) {
+            _movePrev.x = 0.5;
+            _movePrev.y = 0.5;
+            _moveCurr.x = 0.5-factor;
+            _moveCurr.y = 0.5;
+            this.update();
+        });
+	this.rotateDown = (function(factor) {
+            _movePrev.x = 0.5;
+            _movePrev.y = 0.5;
+            _moveCurr.x = 0.5;
+            _moveCurr.y = 0.5+factor;
+            this.update();
+        });
+	this.rotateUp = (function(factor) {
+            _movePrev.x = 0.5;
+            _movePrev.y = 0.5;
+            _moveCurr.x = 0.5;
+            _moveCurr.y = 0.5-factor;
+            this.update();
+        });
+
+
 
 	this.panCamera = (function() {
 
