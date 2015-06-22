@@ -176,17 +176,19 @@ SynthDef(\hydro3, {
 };
 OSCFunc.newMatching(~starlistener, '/star');
 ~hydro3 = Synth(\hydro3);
-~hydro3.set(\amp,0.3)
+~hydro3.set(\amp,0.3);
 ~end = {
+	|msg|
 	var amp = 0.3;
+	"The end".postln;
 	~dacapoi = 10000000000000;
 	Routine({
 		100.do {|x|
 			amp = amp / 1.1;
 			~hydro3.set(\amp,amp);
 			0.1.wait;
-		}
+		};
 	}).play();
 };
-OSCFunc.newMatching(~endlistener, '/end');
+OSCFunc.newMatching(~end, '/end');
 //~end.();
