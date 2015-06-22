@@ -524,10 +524,17 @@ function setSizeOfStar(index,size) {
     geometry.getAttribute("size").needsUpdate = true;
 }
 
+function scalePosition(position) {
+    // too big too early, too small too soon
+    return Math.sqrt(position.x*position.x + position.y*position.y + position.z*position.z);
+ 
+}
 
-function blowup(star,index) {
+function blowup(star,index,position) {
     var osize = getSizeOfStar(index);
-    setSizeOfStar(index,osize*Math.pow(8,1+up/10));
+    var up = scalePosition(position);
+    //setSizeOfStar(index,osize*Math.pow(8,1+up/10));
+    setSizeOfStar(index,osize*(1+up)/(1+Math.log(up)));//Math.pow(8,1+up/10));
     var cb = function() {
         var size = getSizeOfStar(index);
         //debug("Blowing up "+index + " " + size);
@@ -540,15 +547,32 @@ function blowup(star,index) {
         }
     };
     cb();
-                        }
+}
 function render() {
     
     //particles.rotation.x += 0.0005;
     particles.rotation.y += 0.0001;
 
     if ( ! mouseButtonPressed ) {
+        /*
+          0.4 @ 1.0
+          0.6 @ 2.0
+          0.7 @ 5.0 ( a little much) 
+          0.8 @ 10 ( too much) 
+          0.9 @ 20 
+          1.05 @ 45
+          1.27 @ 216
+          1.45 @ 728 (good) 
+          1.6 @ 2500 (could be better) 
+          1.7 @ 7530
+          2.0 @ 52000
+         */
+        var dist = scalePosition(camera.position);
+        var threshold = 0.4+0.1*(1+Math.log(dist)/Math.log(2));
+        debug(dist + " " + threshold);
+        raycaster.params.PointCloud.threshold = threshold;
         raycaster.setFromCamera( mouse, camera );
-    
+
         intersects = raycaster.intersectObject( particles );
         //debug(JSON.stringify(intersects.map(function(x){return x.index})));
         
@@ -563,7 +587,7 @@ function render() {
                 if (diff > 100) {
                     report(star);
                     recent[index] = m;
-                    blowup(star,index);
+                    blowup(star,index,camera.position);
                     break;
                 }
                 recent[index] = m;                                        

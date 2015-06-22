@@ -10,7 +10,7 @@ It is meant to be run offline so all assets are included.
   - [X] Information Panel
   - [X] Mouse navigation
   - [X] Keyboard zoom in out
-  - [ ] Keyboard 
+  - [X] Keyboard 
   - [ ] Fix Raytracing with size 
   - [ ] add maximum note length
   - [ ] Test on laptop with projector
