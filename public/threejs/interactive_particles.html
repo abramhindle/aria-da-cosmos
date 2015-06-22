@@ -21,6 +21,22 @@
 				text-align: center;
 				font-weight: bold;
 			}
+			#infopanel {
+			    position: absolute;
+			    top: 5em;
+                            left: 1em;
+			    width: 15em;
+			    padding: 5px;
+			    font-family: Monospace;
+			    font-size: 13px;
+			    text-align: center;
+			    font-weight: bold;
+			    background-color: #000000;
+			}
+                        .infotd2 {
+                            text-align: right;
+                            width: 10em;
+                        }
 			#debug {
 				position: absolute;
 				top: 3em;
@@ -41,6 +57,7 @@
 				font-size: 5em;
 				text-align: center;
 				font-weight: bold;
+                                visibility: hidden;xsx
 			}
 			#down {
 				position: absolute;
@@ -52,6 +69,7 @@
 				font-size: 5em;
 				text-align: center;
 				font-weight: bold;
+                                visibility: hidden;
 			}
 
 
@@ -61,15 +79,25 @@
 		</style>
 	</head>
 
-	<body>
+	<body>    
 		<div id="container"></div>
+                <div id="infopanel">
+                   <table id="infotable">  
+                   <tr class="infopane"><td colspan=2 class="infotd2" style="text-align: center; height: 2.5em;">          <span id="starname">&nbsp;</span></td></tr>
+                   <tr class="infopane"><td class="infotd">Star #:</td><td class="infotd2">          <span id="starhr">&nbsp;</span></td></tr>
+                   <tr class="infopane"><td class="infotd">Spectrum:</td><td class="infotd2"> <span id="starspectrum">&nbsp;</span></td></tr>
+                   <tr class="infopane"><td class="infotd">Magnitude:</td><td class="infotd2"><span id="magnitude">&nbsp;</span></td></tr>
+                   <tr class="infopane"><td class="infotd">Distance:</td><td class="infotd2"> <span id="distance">&nbsp;</span><br/>lightyears</td></tr>
+                   <tr class="infopane"><td class="infotd">Luminence:</td><td class="infotd2"><span id="lumin">&nbsp;</span></td></tr>
+                   </table>
+                </div>
 		<div id="info"></div>
 		<div id="debug"></div>
-		<div id="up">+</div>
+                <div id="up">+</div>
 		<div id="down">-</div>
 
 		<script src="../build/three.min.js"></script>
-
+		<script src="TrackballControls.js"></script>
 		<script src="js/Detector.js"></script>
 		<script src="js/libs/stats.min.js"></script>
 		<script src="d3.341.min.js"></script>
@@ -127,6 +155,7 @@ request.send();
 var starrows = d3.csv.parse(request.responseText);
 starrows.shift();
 var starhash = {};
+var mouseButtonPressed = 0;  // Used to check if we should trigger things
 starrows.forEach(function(star) {
     if (star["hr"]) {
         starhash["HR "+star["hr"]] = star;
@@ -143,7 +172,15 @@ function debug(str) {
 }
 // send our star selection somewhere
 function report(star) {
-    document.getElementById("info").innerHTML = star.spect;
+    //document.getElementById("info").innerHTML = star.spect;
+    document.getElementById("starname").innerHTML = star.pname+"&nbsp;";
+    document.getElementById("starhr").innerHTML = (star.hr)?("HR "+star.hr+"&nbsp;"):"";
+    document.getElementById("starspectrum").innerHTML = star.spect;
+    document.getElementById("distance").innerHTML = Math.round(star.dist*10)/10;
+    document.getElementById("magnitude").innerHTML = Math.round(star.mag*10)/10;
+    //document.getElementById("position").innerHTML = "["+star.x+",<BR/>"+star.y+",<br/>"+star.z+"]";
+    document.getElementById("lumin").innerHTML = Math.round(star.lum*10)/10;
+    
     var msg = {"queue":[[ "127.0.0.1", "/star", 
                           "s",star.hr, 
                           "f",star.ra,
@@ -249,12 +286,51 @@ function init() {
     //camera.position.set(new THREE.Vector3(0,0,0.5));
     camera.position.z = 1;
     camera.lookAt(new THREE.Vector3( 0, 0, 10000 ));
+    controls = new THREE.TrackballControls( camera );
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.noRotate = false;   
+    controls.noZoom = false;
+    controls.noPan = false;
+    
+    controls.staticMoving = true;
+    controls.dynamicDampingFactor = 0.3;
+    
+    // no mode keys
+    controls.keys = [ ];
+    
+    controls.addEventListener( 'change', render );
+    document.onmousedown = function() { 
+        mouseButtonPressed = 1;
+    };
+    document.onmouseup = function() {
+        mouseButtonPressed = 0;
+    };
+
     up = 1;                     
+    forwardFunc = function() {
+        camera.position.z += -1 * Math.pow(2,up);
+    }
+    backwardFunc = function() {
+        camera.position.z +=  1 * Math.pow(2,up);
+    }
+    leftFunc = function() {
+        camera.position.x += -1 * Math.pow(2,up);
+    }
+    rightFunc = function() {
+        camera.position.x +=  1 * Math.pow(2,up);
+    }
+    
     document.getElementById("up").onmouseover = upFunc = function() {
         up--;
         camera.position.z= -1 * Math.pow(2,up);
         raycaster.params.PointCloud.threshold = 0.1*up;
     };
+    //window.addEventListener( 'keydown', keydown, false );
+    //window.addEventListener( 'keyup', keyup, false );
+
+
     document.getElementById("down").onmouseover = downFunc = function() {
         up++;
         camera.position.z= -1 * Math.pow(2,up);
@@ -279,7 +355,7 @@ function init() {
     var pointMaterial = new THREE.PointCloudMaterial( {
         size: 10,
         transparent: true,
-        opacity: 0.7,
+        opacity: 0.3,
         vertexColors: THREE.VertexColors
     } );
     var shaderMaterial = new THREE.ShaderMaterial( {
@@ -289,7 +365,7 @@ function init() {
 	vertexShader: document.getElementById( 'vertexshader' ).textContent,
 	fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
 	blending: THREE.AdditiveBlending,
-	alphaTest: 0.001,
+	alphaTest: 0.1,
         
     } );
 
@@ -380,10 +456,9 @@ function onWindowResize() {
 function animate() {
     
     requestAnimationFrame( animate );
-    
+    controls.update();    
     render();
     stats.update();
-    
 }
 function getSizeOfStar(index) {
     return geometry.getAttribute("size").array[index];
@@ -414,48 +489,49 @@ function render() {
     
     //particles.rotation.x += 0.0005;
     particles.rotation.y += 0.0001;
-    
-    raycaster.setFromCamera( mouse, camera );
-    
-    intersects = raycaster.intersectObject( particles );
-    //debug(JSON.stringify(intersects.map(function(x){return x.index})));
-    
-    if ( intersects.length > 0 ) {
-        var d = new Date();
-        var m = d.getTime(); 
-        for (var i = 0 ; i < intersects.length; i++) {
-            var index = intersects[i].index;
-            var star = stars[index];
-            var diff = m - (0||recent[index]||0);
-            //debug(diff);
-            if (diff > 100) {
-                report(star);
-                recent[index] = m;
-                blowup(star,index);
-                break;
-            }
-            recent[index] = m;                                        
-        }
-        /*
-	  if ( INTERSECTED != intersects[ 0 ].index ) {
-          
-	  attributes.size.value[ INTERSECTED ] = PARTICLE_SIZE;
-          
-	  INTERSECTED = intersects[ 0 ].index;
-          
-	  attributes.size.value[ INTERSECTED ] = PARTICLE_SIZE * 1.25;
-	  attributes.size.needsUpdate = true;
 
-	  }*/
-    } else if ( INTERSECTED !== null ) {
-        /*
-          var star = stars[INTERSECTED];
-	  attributes.size.value[ INTERSECTED ] = starSize(star);
-	  attributes.size.needsUpdate = true;
-	  INTERSECTED = null;
-                                    */
-    }
+    if ( ! mouseButtonPressed ) {
+        raycaster.setFromCamera( mouse, camera );
     
+        intersects = raycaster.intersectObject( particles );
+        //debug(JSON.stringify(intersects.map(function(x){return x.index})));
+        
+        if ( intersects.length > 0 ) {
+            var d = new Date();
+            var m = d.getTime(); 
+            for (var i = 0 ; i < intersects.length; i++) {
+                var index = intersects[i].index;
+                var star = stars[index];
+                var diff = m - (0||recent[index]||0);
+                //debug(diff);
+                if (diff > 100) {
+                    report(star);
+                    recent[index] = m;
+                    blowup(star,index);
+                    break;
+                }
+                recent[index] = m;                                        
+            }
+            /*
+	      if ( INTERSECTED != intersects[ 0 ].index ) {
+              
+	      attributes.size.value[ INTERSECTED ] = PARTICLE_SIZE;
+              
+	      INTERSECTED = intersects[ 0 ].index;
+              
+	      attributes.size.value[ INTERSECTED ] = PARTICLE_SIZE * 1.25;
+	      attributes.size.needsUpdate = true;
+              
+	      }*/
+        } else if ( INTERSECTED !== null ) {
+            /*
+              var star = stars[INTERSECTED];
+	      attributes.size.value[ INTERSECTED ] = starSize(star);
+	      attributes.size.needsUpdate = true;
+	      INTERSECTED = null;
+            */
+        }
+     }   
     renderer.render( scene, camera );
     
 }
