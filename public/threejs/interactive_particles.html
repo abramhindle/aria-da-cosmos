@@ -156,6 +156,7 @@ var starrows = d3.csv.parse(request.responseText);
 starrows.shift();
 var starhash = {};
 var mouseButtonPressed = 0;  // Used to check if we should trigger things
+var keyIsDown = 0;
 starrows.forEach(function(star) {
     if (star["hr"]) {
         starhash["HR "+star["hr"]] = star;
@@ -167,6 +168,45 @@ var stars = starrows.map(function(star) {
     star.name = star.hr;
     return star;
 });
+
+/* scales x with arr using linear interpolation */
+var scalef = function(x, arr) {
+    if (x < arr[0][0]) {
+        return arr[0][1];
+    }    
+    if (x > arr[arr.length - 1][0]) {
+        return arr[arr.length - 1][1];
+    }
+    var i = 0;
+    while(i < arr.length - 1) {
+        var pos1 = arr[i][0];
+        var pos2 = arr[i+1][0];
+        if (x >= pos1 && x <= pos2) {
+            var dist = pos2 - pos1;
+            var prop = (x - pos1) / dist;
+            return (1.0 - prop)*arr[i][1] + (prop)*arr[i+1][1];
+        }
+        i++;
+    }
+};
+var pcthreshold = [
+     [1.0  ,  0.5   ]//
+    ,[2.0  ,  0.5   ]//
+    ,[5.0  ,  0.5   ]// ( a little much) 
+    ,[10   ,  0.5   ]// ( too much) 
+    ,[20   ,  0.9   ]//
+    ,[45   ,  1.05  ]//
+    ,[216  ,  1.27  ]//
+    ,[728  ,  1.45  ]//(good) 
+    ,[1200  ,  2.0  ]//(good) 
+    ,[2500 ,  3.0   ]// (could be better) 
+    ,[3500 ,  8.0   ]// (could be better) 
+    ,[7530 ,  32.0   ]//
+    ,[52000,  256.0   ]//
+    ,[88000,  300.0   ]//
+];
+
+
 function debug(str) {
     document.getElementById("debug").innerHTML = str;
 }
@@ -353,6 +393,7 @@ function init() {
     };
 
     var keydown = function(event) {
+        keyIsDown = 1;
         //alert(event.keyCode);
         if (event.keyCode == 87) /* w */ {
             zoomInF();
@@ -382,9 +423,13 @@ function init() {
         }
         return true;
     };
+    var keyup = function(event) {
+        keyIsDown = 0;
+        return false;
+    }
 
     window.addEventListener( 'keydown', keydown, false );
-    //window.addEventListener( 'keyup', keyup, false );
+    window.addEventListener( 'keyup', keyup, false );
 
 
     document.getElementById("down").onmouseover = downFunc = function() {
@@ -532,9 +577,27 @@ function scalePosition(position) {
 
 function blowup(star,index,position) {
     var osize = getSizeOfStar(index);
-    var up = scalePosition(position);
+    var dist = scalePosition(camera.position);
+    //var threshold = 0.4+0.1*(1+Math.log(dist)/Math.log(2));
+    //var threshold = scalef(dist, blowupscale);
+    var bscale = (1+dist)/(1+Math.log(dist))
+    debug(dist + " " + bscale);
+    // [ 1 , 2 ], // too small
+    // [ 4 , 2.01 ], // too small
+    // [ 12, 3.7 ], // too big?
+    // [ 27, 6.5 ], // too big!
+    // [ 54, 11 ], // too big!
+    // [ 100, 20 ], // too big!
+    // [ 237, 36 ], // ok
+    // [ 628, 84 ], // ok
+    // [ 1356, 165], // ok
+    // [ 5000, 600], // ok
+    // [ 22000, 2040], // too small
+    // [ 67111, 5540], // too small but often too big
+    // [ 261401, 19400] // too small
+
     //setSizeOfStar(index,osize*Math.pow(8,1+up/10));
-    setSizeOfStar(index,osize*(1+up)/(1+Math.log(up)));//Math.pow(8,1+up/10));
+    setSizeOfStar(index,osize*bscale);//Math.pow(8,1+up/10));
     var cb = function() {
         var size = getSizeOfStar(index);
         //debug("Blowing up "+index + " " + size);
@@ -553,23 +616,11 @@ function render() {
     //particles.rotation.x += 0.0005;
     particles.rotation.y += 0.0001;
 
-    if ( ! mouseButtonPressed ) {
-        /*
-          0.4 @ 1.0
-          0.6 @ 2.0
-          0.7 @ 5.0 ( a little much) 
-          0.8 @ 10 ( too much) 
-          0.9 @ 20 
-          1.05 @ 45
-          1.27 @ 216
-          1.45 @ 728 (good) 
-          1.6 @ 2500 (could be better) 
-          1.7 @ 7530
-          2.0 @ 52000
-         */
+    if ( ! mouseButtonPressed && !keyIsDown) {
         var dist = scalePosition(camera.position);
-        var threshold = 0.4+0.1*(1+Math.log(dist)/Math.log(2));
-        debug(dist + " " + threshold);
+        //var threshold = 0.4+0.1*(1+Math.log(dist)/Math.log(2));
+        var threshold = scalef(dist, pcthreshold);
+
         raycaster.params.PointCloud.threshold = threshold;
         raycaster.setFromCamera( mouse, camera );
 
