@@ -30,11 +30,22 @@ SynthDef(\hydro3, {
 ~rows.do {|v| 
 	~starmap[v[0]] = v[1];
 };
-
-~dacapo = CSVFileReader.read("midi/dacapo.csv");
-~dacapo = ~dacapo.collect {|v| v[1] = v[1].asFloat; v[2] =
-	v[2].asFloat; v[3] = v[3].asFloat; };
-
+~filename = "midi/pran-chaay-chokshu-na-chaay-Violin.mid.sco";
+~filename = "midi/aaji-tomay-abar-chai-shunabare.mid.sco";
+~files = [  "midi/aaji-tomay-abar-chai-shunabare.mid.sco",
+            "midi/baadol-baul.mid.sco",
+            "midi/jodi-tor-daak-shune.mid.sco",
+            "midi/nil-digonte-oi-phuler.mid.sco",
+            "midi/pagla-hawar-badoldine.mid.sco",
+            "midi/phule-phule-dhole-dhole.mid.sco",
+            "midi/pran-bhoriye-trisa-hariye.mid.sco",
+            "midi/pran-chaay-chokshu-na-chaay-Piano.mid.sco",
+            "midi/pran-chaay-chokshu-na-chaay-Violin.mid.sco"];
+~dacapo = ~files.collect {|filename| CSVFileReader.read(filename) }.flatten;
+//~dacapo = CSVFileReader.read(~filename);
+//~dacapo = ~dacapo.collect {|v| v[1] = v[1].asFloat; v[2] =
+//	v[2].asFloat; v[3] = v[3].asFloat; };
+//
 ~dacapoi = 0;
 
 
@@ -143,7 +154,13 @@ SynthDef(\hydro3, {
 */
 
 
+/*
+Routine({100.do { 
+  ~playStar.(["Star",60,60,40,40,["g2v","a0i"].choose,40]);
+  0.1.wait;
+	}}).play;
 
+*/
 ~playStar = {
 	|msg|
 	var hr,ra,dec,dist,mag,spect,lum,freq,dacapo,mdur;
@@ -155,8 +172,8 @@ SynthDef(\hydro3, {
 	spect = msg[5];
 	lum = msg[6];
 	spect.postln;
-	spect.class.postln;
-	dacapo = ~dacapo[~dacapoi];
+	spect.class.postln;//~dacapo.size % 5
+	dacapo = ~dacapo[~dacapoi % (~dacapo.size) ];
 	mdur = 2*dacapo[1]*0.8;
 	if(dacapo[2]==2,{
 		~playestar.(spect,freq: dacapo[3].midicps/5.0,amp:
@@ -177,6 +194,7 @@ SynthDef(\hydro3, {
 OSCFunc.newMatching(~starlistener, '/star');
 ~hydro3 = Synth(\hydro3);
 ~hydro3.set(\amp,0.3);
+//~hydro3.set(\amp,0.0);
 ~end = {
 	|msg|
 	var amp = 0.3;
