@@ -33,6 +33,7 @@ SynthDef(\hydro3, {
 ~filename = "midi/pran-chaay-chokshu-na-chaay-Violin.mid.sco";
 ~filename = "midi/aaji-tomay-abar-chai-shunabare.mid.sco";
 ~files = [  "midi/aaji-tomay-abar-chai-shunabare.mid.sco",
+            "midi/pran-chaay-chokshu-na-chaay-Piano.mid.sco",
             "midi/baadol-baul.mid.sco",
             "midi/jodi-tor-daak-shune.mid.sco",
             "midi/nil-digonte-oi-phuler.mid.sco",
@@ -43,8 +44,8 @@ SynthDef(\hydro3, {
             "midi/pran-chaay-chokshu-na-chaay-Violin.mid.sco"];
 ~dacapo = ~files.collect {|filename| CSVFileReader.read(filename) }.flatten;
 //~dacapo = CSVFileReader.read(~filename);
-//~dacapo = ~dacapo.collect {|v| v[1] = v[1].asFloat; v[2] =
-//	v[2].asFloat; v[3] = v[3].asFloat; };
+~dacapo = ~dacapo.collect {|v| v[1] = v[1].asFloat; v[2] =
+	v[2].asFloat; v[3] = v[3].asFloat; };
 //
 ~dacapoi = 0;
 
