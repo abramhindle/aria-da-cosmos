@@ -211,3 +211,7 @@ OSCFunc.newMatching(~starlistener, '/star');
 };
 OSCFunc.newMatching(~end, '/end');
 //~end.();
+s.doWhenBooted({
+~hydro3 = Synth(\hydro3);
+~hydro3.set(\amp,0.3);
+});
